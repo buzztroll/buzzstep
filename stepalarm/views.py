@@ -6,14 +6,21 @@ from django.http import HttpResponse
 import django.template.loader as djtemplateloader
 import django.http as djhttp
 
+import RPi.GPIO as GPIO
+import hx711
 
 
 _g_logger = logging.getLogger(__name__)
 
+
+GPIO.setmode(GPIO.BCM)
+_g_hx = hx711.HX711(dout_pin=27, pd_sck_pin=17)
+
 # Create your views here.
 
 def get_reading():
-    return 100
+    return _g_hx.get_raw_data_mean(readings=3)
+
 
 def _get_scale():
     try:
