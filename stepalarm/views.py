@@ -40,7 +40,7 @@ def get_state(scale_db_obj):
     else:
         diff = scale_db_obj.step_weight - scale_db_obj.zero_offset
         thresh = diff * scale_db_obj.threshold
-        if scale_db_obj.zero_offset + thresh > get_reading():
+        if scale_db_obj.zero_offset + thresh < get_reading():
             return "ACTIVE"
         else:
             return "INACTIVE"
