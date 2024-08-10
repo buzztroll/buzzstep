@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Scale Calibration</h1>
+    <div>
+        <h2>Zero your scale</h2>
+        <p>Do not step on the scale and click here.</p>
+        <form class="inline" action="/step/" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="zero_it" id="zero_it_id" value="Z">
+            <button type="submit">
+                Zero
+            </button>
+        </form>
+    </div>
+    <div>
+        <h2>Step Weight</h2>
+        <p>Fully step on the scale and click here.</p>
+        <form class="inline" action="/step/" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="stepped_on" id="calibrate_it_id" value="C">
+            <button type="submit">
+                Stepped
+            </button>
+        </form>
+    </div>
+    <hr>
+    <div>
+        <h1>Scale Settings</h1>
+        <table>
+            <tr>
+                <td>Creation Time</td>
+                <td>{{creation_time}}</td>
+            </tr>
+            <tr>
+                <td>Zero Offset</td>
+                <td>{{zero_offset}}</td>
+            </tr>
+            <tr>
+                <td>Stepped Weight</td>
+                <td>{{stepped_weight}}</td>
+            </tr>
+            <tr>
+                <td>Alarm Threshold</td>
+                <td>{{threshold}}</td>
+            </tr>
+            <tr>
+                <td>Current Reading</td>
+                <td>{{current_reading}}</td>
+            </tr>
+        </table>
+    </div>
+{% endblock %}
