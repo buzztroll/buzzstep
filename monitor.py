@@ -2,6 +2,7 @@ import sqlite3
 import sys
 import time
 
+import RPi.GPIO as GPIO
 import hx711
 
 
@@ -11,6 +12,8 @@ class GandolfScale(object):
                  wait_after_signal=5.0):
         self._data_pin = data_pin
         self._clock_pin = clock_pin
+
+        GPIO.setmode(GPIO.BCM)
         self.hx = hx711.HX711(dout_pin=self._data_pin,
                               pd_sck_pin=self._clock_pin)
         self.read_iterations = read_iterations
@@ -24,10 +27,12 @@ class GandolfScale(object):
     def run(self):
         while not self.done:
             time.sleep(self.wait_time)
-            x = self.hx.read_raw()
+            x = self.hx.get_raw_data_mean(readings=3)
             if x > self.threshold:
                 self.cb()
+                print("clearing")
                 time.sleep(self.wait_after_signal)
+                print("Ready")
 
 
 def get_threshold(db_file):
@@ -41,9 +46,13 @@ def get_threshold(db_file):
     return ((step_weight - zero_offset) * threshold) + zero_offset
 
 
+def step_cb():
+    print("STEPPED!")
+
 def main():
     threshold = get_threshold(sys.argv[1])
-    GandolfScale
+    gs = GandolfScale(27, 17, threshold, step_cb)
+    gs.run()
     return 0
 
 
