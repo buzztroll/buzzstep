@@ -1,4 +1,5 @@
 import sqlite3
+import subprocess
 import sys
 import time
 
@@ -8,7 +9,7 @@ import hx711
 
 class GandolfScale(object):
     def __init__(self, data_pin, clock_pin,
-                 threshold, cb, read_iterations=2, wait_time=0.1,
+                 threshold, cb, read_iterations=2, wait_time=0.03,
                  wait_after_signal=5.0):
         self._data_pin = data_pin
         self._clock_pin = clock_pin
@@ -27,12 +28,15 @@ class GandolfScale(object):
     def run(self):
         while not self.done:
             time.sleep(self.wait_time)
-            x = self.hx.get_raw_data_mean(readings=3)
-            if x > self.threshold:
-                self.cb()
-                print("clearing")
-                time.sleep(self.wait_after_signal)
-                print("Ready")
+            try:
+                x = self.hx.get_raw_data_mean(readings=5)
+                if x > self.threshold:
+                    self.cb()
+                    print("clearing")
+                    time.sleep(self.wait_after_signal)
+                    print("Ready")
+            except Exception as ex:
+               print(ex)
 
 
 def get_threshold(db_file):
@@ -48,6 +52,7 @@ def get_threshold(db_file):
 
 def step_cb():
     print("STEPPED!")
+    subprocess.call("/home/bresnaha/Dev/buzzstep/welcome.sh", shell=True)
 
 def main():
     threshold = get_threshold(sys.argv[1])

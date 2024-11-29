@@ -1,4 +1,5 @@
 import logging
+import statistics
 from django.shortcuts import render
 import stepalarm.models as models
 
@@ -17,6 +18,28 @@ GPIO.setmode(GPIO.BCM)
 _g_hx = hx711.HX711(dout_pin=27, pd_sck_pin=17)
 
 # Create your views here.
+
+
+def get_filtered_readings():
+    readings = []
+    for i in range(16):
+        v = _g_hx.get_raw_data_mean(readings=5)
+        readings.append(v)
+
+    _g_logger.info(f"READINGS {str(readings)}")
+    std = statistics.stdev(readings)
+    med = statistics.median(readings)
+
+    low = med - std
+    high = med + std
+
+    filtered = []
+    for v in readings:
+        if v > low and v < high:
+            filtered.append(v)
+
+    return statistics.median(filtered)
+
 
 def get_reading():
     return _g_hx.get_raw_data_mean(readings=3)
@@ -56,9 +79,9 @@ def zeroscale(request):
 
     if request.method == "POST":
         if "zero_it" in request.POST:
-            scale_db_obj.zero_offset = get_reading()
+            scale_db_obj.zero_offset = get_filtered_readings()
         elif "stepped_on" in request.POST:
-            scale_db_obj.step_weight = get_reading()
+            scale_db_obj.step_weight = get_filtered_readings()
         scale_db_obj.save()
 
     context['creation_time'] = scale_db_obj.creation_time
