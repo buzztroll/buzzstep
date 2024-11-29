@@ -3,6 +3,7 @@ import subprocess
 import sys
 import time
 
+import gpiozero
 import RPi.GPIO as GPIO
 import hx711
 
@@ -50,9 +51,22 @@ def get_threshold(db_file):
     return ((step_weight - zero_offset) * threshold) + zero_offset
 
 
+RELAY_PIN = 18
+relay = gpiozero.OutputDevice(RELAY_PIN, active_high=True, initial_value=True)
+
+print("Turning the relay off")
+relay.off()
+
+
 def step_cb():
     print("STEPPED!")
+    print("relay on step_cb")
+    relay.on()
     subprocess.call("/home/bresnaha/Dev/buzzstep/welcome.sh", shell=True)
+    time.sleep(10)
+    print("relay off step_cb")
+    relay.off()
+
 
 def main():
     threshold = get_threshold(sys.argv[1])
@@ -62,5 +76,9 @@ def main():
 
 
 if __name__ == '__main__':
-    rc = main()
-    sys.exit(rc)
+    try:
+        rc = main()
+        sys.exit(rc)
+    finally:
+        print("relay off exit")
+        relay.off()
