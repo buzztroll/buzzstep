@@ -75,6 +75,10 @@ def main():
     return 0
 
 
+# relay pin 18
+# data pin 27
+# clock pin 17
+
 if __name__ == '__main__':
     try:
         rc = main()
