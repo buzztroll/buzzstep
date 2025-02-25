@@ -45,6 +45,8 @@ def main():
         random_colors(pixels)
         time.sleep(3)
         c = pick_house()
+        print(f"picked house {c}")
+
         pixels.fill(c)
         pixels.show()
         time.sleep(90)
