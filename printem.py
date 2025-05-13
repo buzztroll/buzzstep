@@ -29,6 +29,5 @@ if __name__ == '__main__':
         rc = main()
         sys.exit(rc)
     finally:
-        print("relay off exit")
-        relay.off()
+        print("off exit")
 
