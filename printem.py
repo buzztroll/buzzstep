@@ -14,7 +14,7 @@ def main():
     while not done:
         time.sleep(sleep_time)
         try:
-            x = hx.get_raw_data_mean(readings=1)
+            x = hx.get_raw_data()
             print(x)
         except Exception as ex:
             print(ex)

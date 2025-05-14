@@ -23,7 +23,8 @@ _g_hx = hx711.HX711(dout_pin=27, pd_sck_pin=17)
 def get_filtered_readings():
     readings = []
     for i in range(16):
-        v = _g_hx.get_raw_data_mean(readings=5)
+        v_list = _g_hx.get_raw_data()
+        v = sum(v_list) / len(v_list)
         readings.append(v)
 
     _g_logger.info(f"READINGS {str(readings)}")
@@ -42,7 +43,8 @@ def get_filtered_readings():
 
 
 def get_reading():
-    return _g_hx.get_raw_data_mean(readings=3)
+    v_list = _g_hx.get_raw_data()
+    return sum(v_list) / len(v_list)
 
 
 def _get_scale():

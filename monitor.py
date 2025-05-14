@@ -30,7 +30,8 @@ class GandolfScale(object):
         while not self.done:
             time.sleep(self.wait_time)
             try:
-                x = self.hx.get_raw_data_mean(readings=5)
+                load_cell_readings = self.hx.get_raw_data()
+                x = sum(load_cell_readings) / len(load_cell_readings)
                 if x > self.threshold:
                     self.cb()
                     print("clearing")
@@ -48,6 +49,8 @@ def get_threshold(db_file):
     step_weight = row[0]
     threshold = row[1]
     zero_offset = row[2]
+
+    print(f"{step_weight} {zero_offset} {threshold}")
     return ((step_weight - zero_offset) * threshold) + zero_offset
 
 
