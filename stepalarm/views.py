@@ -21,11 +21,7 @@ _g_hx = hx711.HX711(dout_pin=27, pd_sck_pin=17)
 
 
 def get_filtered_readings():
-    readings = []
-    for i in range(16):
-        v_list = _g_hx.get_raw_data()
-        v = sum(v_list) / len(v_list)
-        readings.append(v)
+    readings = _g_hx.get_raw_data(times=32)
 
     _g_logger.info(f"READINGS {str(readings)}")
     std = statistics.stdev(readings)

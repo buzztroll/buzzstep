@@ -1,3 +1,4 @@
+import statistics
 import sqlite3
 import subprocess
 import sys
@@ -6,6 +7,19 @@ import time
 import gpiozero
 import RPi.GPIO as GPIO
 import hx711
+
+
+def stat_values(hx):
+    raw = hx.get_raw_data(times=5)
+    data = [x for x in raw if x >= 0]
+
+    median_value = statistics.median(data)
+    mean = sum(data) / len(data)
+    stdev = statistics.stdev(data)
+    filtered = [n for n in data if abs(n - mean) <= stdev]
+    new_mean = sum(filtered) / len(filtered)
+
+    return new_mean
 
 
 class GandolfScale(object):
@@ -31,7 +45,7 @@ class GandolfScale(object):
             time.sleep(self.wait_time)
             try:
                 load_cell_readings = self.hx.get_raw_data()
-                x = sum(load_cell_readings) / len(load_cell_readings)
+                x = stat_values(self.hx)
                 if x > self.threshold:
                     self.cb()
                     print("clearing")
